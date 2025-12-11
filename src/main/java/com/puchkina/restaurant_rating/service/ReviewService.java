@@ -19,14 +19,16 @@ public class ReviewService {
     private final ReviewRepository reviewRepository;
     private final RestaurantRepository restaurantRepository;
 
-    public void save(Review review) {
-        reviewRepository.save(review);
-        recalculateRestaurantRating(review.getRestaurantId());
+    public Review save(Review review) {
+        Review saved = reviewRepository.save(review);
+        recalculateRestaurantRating(review.getRestaurant().getId());
+        return saved;
     }
 
     public void remove(Review review) {
-        reviewRepository.remove(review);
-        recalculateRestaurantRating(review.getRestaurantId());
+        Long restaurantId = review.getRestaurant().getId();
+        reviewRepository.delete(review);
+        recalculateRestaurantRating(restaurantId);
     }
 
     public List<Review> findAll() {
@@ -34,21 +36,18 @@ public class ReviewService {
     }
 
     private void recalculateRestaurantRating(Long restaurantId) {
-        Restaurant restaurant = restaurantRepository.findAll().stream()
-                .filter(r -> r.getId().equals(restaurantId))
-                .findFirst()
+        Restaurant restaurant = restaurantRepository.findById(restaurantId)
                 .orElse(null);
 
         if (restaurant == null) {
             return;
         }
 
-        List<Review> reviewsForRestaurant = reviewRepository.findAll().stream()
-                .filter(r -> r.getRestaurantId().equals(restaurantId))
-                .collect(Collectors.toList());
+        List<Review> reviewsForRestaurant = reviewRepository.findByRestaurantId(restaurantId);
 
         if (reviewsForRestaurant.isEmpty()) {
             restaurant.setRating(BigDecimal.ZERO);
+            restaurantRepository.save(restaurant);
             return;
         }
 
@@ -60,5 +59,6 @@ public class ReviewService {
                 .divide(BigDecimal.valueOf(reviewsForRestaurant.size()), 2, RoundingMode.HALF_UP);
 
         restaurant.setRating(average);
+        restaurantRepository.save(restaurant);
     }
 }

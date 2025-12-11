@@ -10,25 +10,22 @@ import org.springframework.stereotype.Component;
 public class RestaurantMapper {
 
     public Restaurant toEntity(RestaurantRequestDto dto, Long id) {
-        return new Restaurant(
-                id,
-                dto.name(),
-                dto.description(),
-                CuisineType.valueOf(dto.cuisineType()),
-                dto.averageCheck(),
-                null
-        );
+        Restaurant restaurant = new Restaurant();
+        restaurant.setId(id);
+        restaurant.setName(dto.name());
+        restaurant.setDescription(dto.description());
+        restaurant.setCuisineType(CuisineType.valueOf(dto.cuisineType()));
+        restaurant.setAverageCheck(dto.averageCheck());
+        return restaurant;
     }
 
     public Restaurant toEntity(RestaurantRequestDto dto) {
-        return new Restaurant(
-                null,
-                dto.name(),
-                dto.description(),
-                CuisineType.valueOf(dto.cuisineType()),
-                dto.averageCheck(),
-                null
-        );
+        Restaurant restaurant = new Restaurant();
+        restaurant.setName(dto.name());
+        restaurant.setDescription(dto.description());
+        restaurant.setCuisineType(CuisineType.valueOf(dto.cuisineType()));
+        restaurant.setAverageCheck(dto.averageCheck());
+        return restaurant;
     }
 
     public RestaurantResponseDto toResponseDto(Restaurant restaurant) {

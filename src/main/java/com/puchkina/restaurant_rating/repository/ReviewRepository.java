@@ -2,33 +2,11 @@ package com.puchkina.restaurant_rating.repository;
 
 import com.puchkina.restaurant_rating.entity.Review;
 import org.springframework.stereotype.Repository;
-
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 @Repository
-public class ReviewRepository {
+public interface ReviewRepository extends JpaRepository<Review, Long> {
 
-    private final List<Review> reviews = new ArrayList<>();
-
-    public void save(Review review) {
-        reviews.add(review);
-    }
-
-    public void remove(Review review) {
-        reviews.remove(review);
-    }
-
-    public List<Review> findAll() {
-        return Collections.unmodifiableList(reviews);
-    }
-
-    public Optional<Review> findByIds(Long visitorId, Long restaurantId) {
-        return reviews.stream()
-                .filter(r -> r.getVisitorId().equals(visitorId)
-                        && r.getRestaurantId().equals(restaurantId))
-                .findFirst();
-    }
+    List<Review> findByRestaurantId(Long restaurantId);
 }

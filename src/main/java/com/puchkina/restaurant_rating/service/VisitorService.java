@@ -12,15 +12,19 @@ import java.util.List;
 public class VisitorService {
     private final VisitorRepository visitorRepository;
 
-    public void save(Visitor visitor) {
-        visitorRepository.save(visitor);
+    public Visitor save(Visitor visitor) {
+        return visitorRepository.save(visitor);
     }
 
     public void remove(Visitor visitor) {
-        visitorRepository.remove(visitor);
+        visitorRepository.delete(visitor);
     }
 
     public List<Visitor> findAll() {
         return visitorRepository.findAll();
+    }
+
+    public Visitor findById(Long id) {
+        return visitorRepository.findById(id).orElse(null);
     }
 }
