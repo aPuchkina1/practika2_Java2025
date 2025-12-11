@@ -13,15 +13,19 @@ public class RestaurantService {
 
     private final RestaurantRepository restaurantRepository;
 
-    public void save(Restaurant restaurant) {
-        restaurantRepository.save(restaurant);
+    public Restaurant save(Restaurant restaurant) {
+        return restaurantRepository.save(restaurant);
     }
 
     public void remove(Restaurant restaurant) {
-        restaurantRepository.remove(restaurant);
+        restaurantRepository.delete(restaurant);
     }
 
     public List<Restaurant> findAll() {
         return restaurantRepository.findAll();
+    }
+
+    public Restaurant findById(Long id) {
+        return restaurantRepository.findById(id).orElse(null);
     }
 }

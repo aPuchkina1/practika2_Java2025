@@ -9,21 +9,20 @@ import org.springframework.stereotype.Component;
 public class VisitorMapper {
 
     public Visitor toEntity(VisitorRequestDto dto, Long id) {
-        return new Visitor(
-                id,
-                dto.name(),
-                dto.age(),
-                dto.gender()
-        );
+        Visitor visitor = new Visitor();
+        visitor.setId(id);
+        visitor.setName(dto.name());
+        visitor.setAge(dto.age());
+        visitor.setGender(dto.gender());
+        return visitor;
     }
 
     public Visitor toEntity(VisitorRequestDto dto) {
-        return new Visitor(
-                null,
-                dto.name(),
-                dto.age(),
-                dto.gender()
-        );
+        Visitor visitor = new Visitor();
+        visitor.setName(dto.name());
+        visitor.setAge(dto.age());
+        visitor.setGender(dto.gender());
+        return visitor;
     }
 
     public VisitorResponseDto toResponseDto(Visitor visitor) {

@@ -2,25 +2,9 @@ package com.puchkina.restaurant_rating.repository;
 
 import com.puchkina.restaurant_rating.entity.Visitor;
 import org.springframework.stereotype.Repository;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 @Repository
-public class VisitorRepository {
+public interface VisitorRepository extends JpaRepository<Visitor, Long> {
 
-    private final List<Visitor> visitors = new ArrayList<>();
-
-    public void save(Visitor visitor) {
-        visitors.add(visitor);
-    }
-
-    public void remove(Visitor visitor) {
-        visitors.remove(visitor);
-    }
-
-    public List<Visitor> findAll() {
-        return Collections.unmodifiableList(visitors);
-    }
 }

@@ -8,6 +8,8 @@ import com.puchkina.restaurant_rating.service.ReviewService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import com.puchkina.restaurant_rating.service.RestaurantService;
+import com.puchkina.restaurant_rating.service.VisitorService;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -19,6 +21,8 @@ public class ReviewController {
 
     private final ReviewService reviewService;
     private final ReviewMapper reviewMapper;
+    private final RestaurantService restaurantService;
+    private final VisitorService visitorService;
 
     @GetMapping
     public List<ReviewResponseDto> getAll() {
@@ -31,8 +35,8 @@ public class ReviewController {
     public ReviewResponseDto getOne(@PathVariable Long visitorId,
                                     @PathVariable Long restaurantId) {
         return reviewService.findAll().stream()
-                .filter(r -> r.getVisitorId().equals(visitorId)
-                        && r.getRestaurantId().equals(restaurantId))
+                .filter(r -> r.getVisitor().getId().equals(visitorId)
+                        && r.getRestaurant().getId().equals(restaurantId))
                 .findFirst()
                 .map(reviewMapper::toResponseDto)
                 .orElse(null);
@@ -40,33 +44,43 @@ public class ReviewController {
 
     @PostMapping
     public ReviewResponseDto create(@RequestBody @Valid ReviewRequestDto dto) {
-        Review review = reviewMapper.toEntity(dto);
-        reviewService.save(review);
-        return reviewMapper.toResponseDto(review);
+        var restaurant = restaurantService.findById(dto.restaurantId());
+        var visitor = visitorService.findById(dto.visitorId());
+
+        Review review = reviewMapper.toEntity(dto, restaurant, visitor);
+        Review saved = reviewService.save(review);
+
+        return reviewMapper.toResponseDto(saved);
     }
+
 
     @PutMapping("/{visitorId}/{restaurantId}")
     public ReviewResponseDto update(@PathVariable Long visitorId,
                                     @PathVariable Long restaurantId,
                                     @RequestBody @Valid ReviewRequestDto dto) {
+
         reviewService.findAll().stream()
-                .filter(r -> r.getVisitorId().equals(visitorId)
-                        && r.getRestaurantId().equals(restaurantId))
+                .filter(r -> r.getVisitor().getId().equals(visitorId)
+                        && r.getRestaurant().getId().equals(restaurantId))
                 .findFirst()
                 .ifPresent(reviewService::remove);
 
-        Review updated = reviewMapper.toEntity(dto);
-        reviewService.save(updated);
+        var restaurant = restaurantService.findById(dto.restaurantId());
+        var visitor = visitorService.findById(dto.visitorId());
 
-        return reviewMapper.toResponseDto(updated);
+        Review updated = reviewMapper.toEntity(dto, restaurant, visitor);
+        Review saved = reviewService.save(updated);
+
+        return reviewMapper.toResponseDto(saved);
     }
+
 
     @DeleteMapping("/{visitorId}/{restaurantId}")
     public void delete(@PathVariable Long visitorId,
                        @PathVariable Long restaurantId) {
         reviewService.findAll().stream()
-                .filter(r -> r.getVisitorId().equals(visitorId)
-                        && r.getRestaurantId().equals(restaurantId))
+                .filter(r -> r.getVisitor().getId().equals(visitorId)
+                        && r.getRestaurant().getId().equals(restaurantId))
                 .findFirst()
                 .ifPresent(reviewService::remove);
     }
